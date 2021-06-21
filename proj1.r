@@ -9,6 +9,7 @@ library(dplyr)
 library(astsa)
 library(TTR)
 library(timeSeries)
+library(zoo)
 
 setwd("C:\\Users\\carli\\Documents\\GitHub\\TimeSeries")
 
@@ -21,26 +22,20 @@ names(data)[names(data) == "Av.da Lib. (µg/m3)"] <- "value"
 
 dim(data)
 
-# Analyse by hour, day, week and month
-# Sum all values for the same day and divide by number of observations of that day
-data = aggregate(data$value, by=list(data$date), sum)
+
+# Analyse by day
+data = aggregate(data$value, by=list(data$date), function(x) mean(x, na.rm=TRUE))
+
 names(data)[names(data) == "Group.1"] <- "date"
 names(data)[names(data) == "x"] <- "value"
 
-if (FALSE){
-  s = 0
-  for (date in data$Data){
-    print("Printing date:")
-    print(date)
-    for (hour in date){
-      print(hour)
-      if (date[hour] == as.numeric(substr(data$Data[1], start=9, stop=10)))
-      s = s + date[hour]$`Av.da Lib. (µg/m3)`
-    }
-    break
-  }
-}
+data$value[is.nan(data$value)]<-NA
 
+data$value = na.approx(data$value)
+
+
+
+#Plots
 p <- ggplot(data, aes(x=date, y=value)) +
   geom_line() +
   ylab("ug/m3") + xlab("year") + theme_classic()
