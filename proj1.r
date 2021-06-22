@@ -13,6 +13,8 @@ library(zoo)
 library(stlplus)
 library(gridExtra)
 library(extremogram)
+library(fGarch)
+
 
 setwd("C:\\Users\\carli\\Documents\\GitHub\\TimeSeries")
 
@@ -54,7 +56,7 @@ plot(y2)
 residuals=y$time.series[,3]
 
 # Partial autocorrelation function
-pacf(tsdata, lag.max=100)
+pacf(tsdata, lag.max=100, main="Partial Autocorrelation Original Data")
 
 acf(tsdata, lag.max=100, main="Autocorrelation Original Data")
 acf(residuals, lag.max=100, main="Autocorrelation Residuals")
@@ -85,19 +87,24 @@ extremogram1(z, 0.90, 40, type=1, ploting = 1, cutoff = 1, start = 0)
 
 data2 = read.table("2016-20-Nasdaq.txt", header=TRUE, sep=",", dec=".")
 
-tsdata2 = ts(data2, frequency = 12, start = c(2016, 1), end = c(2020,12))
-plot.ts(tsdata2)
+tsdata2 = ts(data2$Close, frequency = 12, start = c(2016, 1), end = c(2020,12))
+plot.ts(tsdata2, ylab = 'Close Value', xlab = 'Year')
 
 # Log Returns
 prices<-data2$Close
 log_returns <- diff(log(prices), lag=1)
 
-plot.ts(log_returns)
+plot.ts(log_returns, ylab = 'Log Returns', xlab = 'Days')
 
-acf(log_returns, lag.max=100, main="Log Returns")
-pacf(log_returns, lag.max=100, main="Log Returns")
+acf(log_returns, main="Autocorrelation Log Returns")
+pacf(log_returns, main="Partial Autocorrelation Log Returns")
 
-acf(abs(log_returns), lag.max=100, main="Log Returns")
-acf(log_returns^2, lag.max=100, main="Log Returns")
+acf(log_returns^2, main="Autocorrelation Squared Log Returns")
+acf(abs(log_returns), main="Autocorrelation Absolute Log Returns")
 
 
+#Model fitting
+
+aux = data2$Close
+
+fit=garchFit(???garch(1,1), dat=aux, trace = FALSE)
