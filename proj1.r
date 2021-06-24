@@ -14,6 +14,12 @@ library(stlplus)
 library(gridExtra)
 library(extremogram)
 library(fGarch)
+library(rugarch)
+library(tseries)
+library(fBasics)
+library(zoo)
+library(lmtest) 
+library(forecast)
 
 
 setwd("C:\\Users\\carli\\Documents\\GitHub\\TimeSeries")
@@ -105,5 +111,28 @@ acf(abs(log_returns), main="Autocorrelation Absolute Log Returns")
 
 #Model fitting
 
-summary(garchFit(???garch(1,1), data=data2$Close, trace = FALSE))
-summary(garchFit(???garch(1,4), data=data2$Close, trace = FALSE))
+if(FALSE){
+  for(x in 1:5){
+    for(y in 1:5){
+      print(typeof(x))
+      summary(garchFit(substitute(???garch(p,q), list(p=x, q=y)), data=log_returns, trace = FALSE))
+      print(x)
+      print(y)
+    }
+  }
+}
+fit = garchFit(???garch(1,1), data=log_returns, trace = FALSE)
+summary(garchFit(???garch(1,1), data=log_returns, trace = FALSE))
+
+predict(fit, n.ahead = 90, trace = FALSE, plot=TRUE)
+
+
+
+garch11.t.spec=ugarchspec(variance.model=list(garchOrder=c(1,1)), mean.model=list(armaOrder=c(0,0)), distribution.model = "std")
+garch11.t.fit=ugarchfit(spec=garch11.t.spec, data=log_returns)
+garch11.t.fit
+plot(garch11.t.fit, which="all")
+
+f=ugarchforecast(garch11.t.fit, n.ahead=20)
+f
+plot(f)
