@@ -105,6 +105,5 @@ acf(abs(log_returns), main="Autocorrelation Absolute Log Returns")
 
 #Model fitting
 
-aux = data2$Close
-
-fit=garchFit(???garch(1,1), dat=aux, trace = FALSE)
+summary(garchFit(???garch(1,1), data=data2$Close, trace = FALSE))
+summary(garchFit(???garch(1,4), data=data2$Close, trace = FALSE))
